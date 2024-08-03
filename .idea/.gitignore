@@ -1,0 +1,8 @@
+# Default ignored files
+/../../../../:Lessons/DjangoRestAPI/.idea/shelf/
+/../../../../:Lessons/DjangoRestAPI/.idea/workspace.xml
+# Editor-based HTTP Client requests
+/../../../../:Lessons/DjangoRestAPI/.idea/httpRequests/
+# Datasource local storage ignored files
+/../../../../:Lessons/DjangoRestAPI/.idea/dataSources/
+/../../../../:Lessons/DjangoRestAPI/.idea/dataSources.local.xml
