@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Avg
 from django.utils.text import slugify
 
 
@@ -46,6 +47,11 @@ class Product(models.Model):
             self.slug = slugify(self.title)
 
         super(Product, self).save(*args, **kwargs)
+
+    @property
+    def rating(self):
+        r = self.objects.annotate(avg_rating=Avg('comments__rating'))
+        return r
 
 
 class Image(models.Model):
