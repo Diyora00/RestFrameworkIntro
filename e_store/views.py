@@ -3,8 +3,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from e_store.models import Category
-from e_store.serializers import CategoryModelSerializer
+from e_store.models import Category, Group, Product
+from e_store.serializers import CategoryModelSerializer, GroupModelSerializer, ProductModelSerializer
 from django.shortcuts import render
 
 
@@ -18,6 +18,35 @@ class CategoryDetailView(generics.RetrieveAPIView, generics.DestroyAPIView, gene
     permission_classes = [AllowAny, ]
     queryset = Category.objects.all()
     serializer_class = CategoryModelSerializer
+    lookup_field = 'slug'
+
+
+class GroupList(generics.ListCreateAPIView):
+    permission_classes = [AllowAny, ]
+    queryset = Group.objects.all()
+    serializer_class = GroupModelSerializer
+    # lookup_field = 'slug'
+
+    # def get_queryset(self):
+    #     return Group.objects.filter(category__slug=self.kwargs['slug'])
+
+
+class GroupDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny, ]
+    queryset = Group.objects.all()
+    serializer_class = GroupModelSerializer
+    lookup_field = 'slug'
+
+
+class ProductList(generics.ListCreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductModelSerializer
+
+
+class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny, ]
+    serializer_class = ProductModelSerializer
+    queryset = Product.objects.all()
     lookup_field = 'slug'
 
 
@@ -70,5 +99,12 @@ class AddCategory(APIView):
 #         #     }
 #         #     for category in Category.objects.all()
 #         # ]
-#         serializer = CategoryModelSerializer(categories, many=True)
+#         serializer = CategoryModelSerializer(categories, many=True, context={'request': request})
 #         return Response(serializer.data, status=status.HTTP_200_OK)
+#
+#     def post(self, request):
+#         serializer = CategoryModelSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+

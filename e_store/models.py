@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Avg
+from django.db.models import Sum
 from django.utils.text import slugify
 
 
@@ -33,6 +33,9 @@ class Group(models.Model):
 
         super(Group, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return self.title
+
 
 class Product(models.Model):
     title = models.CharField(max_length=250)
@@ -48,16 +51,24 @@ class Product(models.Model):
 
         super(Product, self).save(*args, **kwargs)
 
-    @property
-    def rating(self):
-        r = self.objects.annotate(avg_rating=Avg('comments__rating'))
-        return r
+    # @property
+    # def rating(self):
+    #     r = self.objects.annotate(avg_rating=Sum('comments__rating'))
+    #     if self.comments.count() > 0:
+    #         result = round(r/self.comments.count(), 2)
+    #     return int(result)
+
+    def __str__(self):
+        return self.title
 
 
 class Image(models.Model):
     image = models.ImageField(null=True, blank=True, upload_to='products')
     is_primary = models.BooleanField(default=False)
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='images')
+
+    def __str__(self):
+        return self.image.url
 
 
 class Comment(models.Model):
