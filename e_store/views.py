@@ -3,8 +3,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from e_store.models import Category, Group, Product
-from e_store.serializers import CategoryModelSerializer, GroupModelSerializer, ProductModelSerializer
+from e_store.models import Category, Group, Product, Attribute
+from e_store.serializers import CategoryModelSerializer, GroupModelSerializer, ProductModelSerializer, AttributeModelSerializer
 from django.shortcuts import render
 
 
@@ -48,6 +48,31 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductModelSerializer
     queryset = Product.objects.all()
     lookup_field = 'slug'
+
+    def get_serializer_context(self, ):
+        context = super().get_serializer_context()
+        obj = Product.objects.filter(slug=self.kwargs['slug']).first()
+        images = obj.images.all()
+        request = self.request
+        context['all_images'] = [request.build_absolute_uri(image.image.url) for image in images]
+
+        """ single dictionary format """
+        # attributes = {i.key.key_name: i.value.value_name for i in obj.attributes.all()}
+
+        attributes = [{i.key.key_name: i.value.value_name} for i in obj.attributes.all()]
+        context['attributes'] = attributes
+
+        context['comments'] = obj.comments.all().values('message', 'rating', 'user__username')
+        # print(obj.attributes.all().values('key__key_name', 'value__value_name'))
+        return context
+
+
+class AttributesView(generics.ListAPIView):
+    serializer_class = AttributeModelSerializer
+    queryset = Attribute.objects.all()
+
+    def get_queryset(self):
+        return self.queryset.filter(product__slug=self.kwargs['slug'])
 
 
 class AddCategory(APIView):

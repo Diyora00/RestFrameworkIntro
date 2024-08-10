@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Sum
 from django.utils.text import slugify
@@ -44,19 +45,13 @@ class Product(models.Model):
     description = models.TextField()
     discount = models.PositiveIntegerField(default=0)
     group = models.ForeignKey('Group', on_delete=models.CASCADE, related_name='products')
+    is_liked = models.ManyToManyField(User)
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
 
         super(Product, self).save(*args, **kwargs)
-
-    # @property
-    # def rating(self):
-    #     r = self.objects.annotate(avg_rating=Sum('comments__rating'))
-    #     if self.comments.count() > 0:
-    #         result = round(r/self.comments.count(), 2)
-    #     return int(result)
 
     def __str__(self):
         return self.title
@@ -83,6 +78,7 @@ class Comment(models.Model):
     file = models.FileField(null=True, blank=True)
     message = models.TextField(null=True, blank=True)
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='comments')
 
 
 class AttributeKey(models.Model):
@@ -100,7 +96,7 @@ class AttributeValue(models.Model):
 
 
 class Attribute(models.Model):
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='attributes')
     key = models.ForeignKey('AttributeKey', on_delete=models.CASCADE)
     value = models.ForeignKey('AttributeValue', on_delete=models.CASCADE)
 
