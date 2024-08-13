@@ -1,5 +1,6 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -39,6 +40,8 @@ class GroupDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProductList(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
     queryset = Product.objects.all()
     serializer_class = ProductModelSerializer
 
@@ -57,9 +60,10 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
         context['all_images'] = [request.build_absolute_uri(image.image.url) for image in images]
 
         """ single dictionary format """
-        # attributes = {i.key.key_name: i.value.value_name for i in obj.attributes.all()}
+        attributes = {i.key.key_name: i.value.value_name for i in obj.attributes.all()}
 
-        attributes = [{i.key.key_name: i.value.value_name} for i in obj.attributes.all()]
+        """ dict in list format"""
+        # attributes = [{i.key.key_name: i.value.value_name} for i in obj.attributes.all()]
         context['attributes'] = attributes
 
         context['comments'] = obj.comments.all().values('message', 'rating', 'user__username')
@@ -70,9 +74,7 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
 class AttributesView(generics.ListAPIView):
     serializer_class = AttributeModelSerializer
     queryset = Attribute.objects.all()
-
-    def get_queryset(self):
-        return self.queryset.filter(product__slug=self.kwargs['slug'])
+    lookup_field = 'slug'
 
 
 class AddCategory(APIView):

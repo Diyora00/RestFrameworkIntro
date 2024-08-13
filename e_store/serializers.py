@@ -1,6 +1,8 @@
 from django.db.models import Avg
 from django.db.models.functions import Round
 from rest_framework import serializers
+from django.contrib.auth.models import User
+from rest_framework.exceptions import ValidationError
 from e_store.models import Category, Group, Product, Image, Attribute
 
 
@@ -74,3 +76,82 @@ class AttributeModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attribute
         fields = '__all__'
+
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+
+# class UserRegisterSerializer(serializers.ModelSerializer):
+#     first_name = serializers.CharField(required=False)
+#     last_name = serializers.CharField(required=False)
+#     username = serializers.CharField()
+#     email = serializers.EmailField()
+#     password = serializers.CharField(max_length=250, required=True)
+#     password2 = serializers.CharField(max_length=250, required=True)
+#
+#     class Meta:
+#         model = User
+#         fields = '__all__'
+#
+#     def validate_username(self, username):
+#         if User.objects.filter(username=username).exists():
+#             detail = {'detail': 'User already exists !'}
+#             raise serializers.ValidationError(detail=detail)
+#         return username
+#
+#     def validate(self, instance):
+#         if instance['password'] != instance['password2']:
+#             raise serializers.ValidationError(detail={'message': 'Passwords do not match!'})
+#
+#         if User.objects.filter(email=instance['email']).exists():
+#             raise serializers.ValidationError(detail={'message': 'Email already registered!'})
+#
+#         return instance
+#
+#     def create(self, validated_data):
+#         password = validated_data.pop('password')
+#         user = User.objects.create_user(**validated_data)
+#         user.password = user.set_password(password)
+#         user.save()
+#         return user
+class UserRegisterSerializer(serializers.ModelSerializer):
+    username = serializers.CharField()
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name',]
+        extra_kwargs = {
+            'password': {"write_only": True}
+        }
+
+    def validate_username(self, username):
+        if User.objects.filter(username=username).exists():
+            detail = {
+                "detail": "User already exist!"
+            }
+            raise ValidationError(detail=detail)
+        return username
+
+    def validate(self, instance):
+        if instance['password'] != instance['password2']:
+            raise ValidationError({"message": "Passwords do not match"})
+
+        if User.objects.filter(email=instance['email']).exists():
+            raise ValidationError({"message": "Email already exists !"})
+
+        return instance
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        passowrd2 = validated_data.pop('password2')
+        user = User.objects.create(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
