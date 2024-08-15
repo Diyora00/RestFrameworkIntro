@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from e_store.models import Category, Group, Product, Attribute
 from e_store.serializers import CategoryModelSerializer, GroupModelSerializer, ProductModelSerializer, AttributeModelSerializer
-from django.shortcuts import render
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class CategoryList(generics.ListAPIView, generics.CreateAPIView):
@@ -41,7 +41,7 @@ class GroupDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class ProductList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [JWTAuthentication]
     queryset = Product.objects.all()
     serializer_class = ProductModelSerializer
 
