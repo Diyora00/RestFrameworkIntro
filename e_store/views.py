@@ -1,5 +1,5 @@
 from rest_framework import generics
-from rest_framework.authentication import TokenAuthentication
+from e_store.permissions import CustomPermissionForProduct
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -40,14 +40,14 @@ class GroupDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProductList(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+    permission_classes = [CustomPermissionForProduct, ]
+    # authentication_classes = [JWTAuthentication]
     queryset = Product.objects.all()
     serializer_class = ProductModelSerializer
 
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [AllowAny, ]
+    permission_classes = [CustomPermissionForProduct]
     serializer_class = ProductModelSerializer
     queryset = Product.objects.all()
     lookup_field = 'slug'
