@@ -12,11 +12,11 @@ urlpatterns = [
 
     # Group
     path('category/group/', GroupList.as_view(), name='group_list'),
-    # path('category/group/<slug:slug>/', GroupDetailView.as_view(), name='group_detail'),
+    path('category/group/<slug:slug>/', GroupDetailView.as_view(), name='group_detail'),
 
     # Product
-    path('category/group/product/', ProductList.as_view(), name='group_list'),
-    path('category/group/product/<slug:slug>/', ProductDetailView.as_view(), name='group_detail'),
+    path('category/product/', ProductList.as_view(), name='group_list'),
+    path('category/product/<slug:slug>/', ProductDetailView.as_view(), name='group_detail'),
 
     # Attributes
     path('category/group/product/<slug:slug>/attributes/', AttributesView.as_view(), name='related_attributes'),
