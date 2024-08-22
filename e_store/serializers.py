@@ -1,4 +1,4 @@
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from django.db.models.functions import Round
 from rest_framework import serializers
 from django.contrib.auth.models import User
@@ -21,6 +21,13 @@ class GroupModelSerializer(serializers.ModelSerializer):
     # categories = CategoryModelSerializer(many=True, read_only=True)
     # category = CategoryModelSerializer(read_only=True)
     category_slug = serializers.SlugField(source='category.slug', read_only=True)
+    product_count = serializers.SerializerMethodField()
+
+    def get_product_count(self, obj):
+        # for i in obj.products.all():
+        #     print(i)
+
+        return obj.products.aggregate(Count('title'))['title__count']
 
     class Meta:
         model = Group

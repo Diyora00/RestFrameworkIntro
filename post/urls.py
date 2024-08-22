@@ -3,9 +3,13 @@ from rest_framework.routers import DefaultRouter
 from post import views
 
 
-router = DefaultRouter()
-router.register('post', views.PostViewSet, basename='post')
-
+# router = DefaultRouter()
+# router.register('post', views.PostViewSet, basename='post')
+#
+# urlpatterns = [
+#
+# ] + router.urls
 urlpatterns = [
-
-] + router.urls
+    path('post-list/', views.PostView.as_view()),
+    path('post-list/<int:pk>/', views.PostDetailView.as_view())
+]

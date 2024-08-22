@@ -153,6 +153,20 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    # a cache alias or name. In this case, we use "default" as the alias.
+    "default": {
+        # "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        # "LOCATION": "unique-snowflake",
+
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "D:/Lessons/DjangoRestAPI/cache",
+
+        # "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        # "LOCATION": "my_cache_table",
+        # python manage.py createcachetable
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
